@@ -1,80 +1,72 @@
-import { Component } from "react";
+
+import { useState, useEffect } from "react";
 import '../../src/index.css';
 import { ContactList } from "./ContactList/ContactList";
-import { ContactForm } from "./СontactForm/ContactForm";
+import  ContactForm  from "./СontactForm/ContactForm";
 import { Filter } from "./Filter/Filter";
-import data from "../data.json";
-export  class App extends Component {
 
-  state = {
-    contacts: [],
-    filter: '',
-  } 
 
-  onAddContact = (obj) => {
-    const equalName = this.state.contacts.find(
-      element => element.name.toLowerCase() === obj.name.toLowerCase()
+const App = () => {
+  const [contacts, setContacts] = useState(() => {
+      const savedContacts = localStorage.getItem('contacts');
+      const parsedContacts = JSON.parse(savedContacts);
+      return parsedContacts ? parsedContacts : [
+    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },]
+    }
     );
-    if (equalName) return alert(`${equalName.name} is already in contacts.`)
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, obj],
-    }))
+  
+  const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts])
+
+  const onAddContact = (obj) => {
+    const equalName = contacts.find(
+      element => element.name.toLowerCase() === obj.name.toLowerCase());
+
+    if (equalName) return alert(`${equalName.name} is already in contacts.`);
+
+    setContacts(prevContacts => ([...prevContacts, obj]))
   }
+
+  const deleteContact = (id) => {
+    setContacts(prevContacts => (prevContacts.filter(contact => contact.id !== id)));
+  }
+
+  const onFilterInput = (value) => { setFilter(value) }
   
-  filteredContacts = () => {
-    const { filter, contacts } = this.state;
+  const filterContacts = () => {
+    if (!filter) {
+      return contacts;
+    }
+
     const normalizedValue = filter.toLowerCase();
-  
     const filteredContactsArray = contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedValue));
     return filteredContactsArray;
   }
-  
- 
-  changeFilter = filter => {
-    this.setState({ filter: filter.toLowerCase() });
-  };
-  
-  deleteContact = (id) => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id)
-    }));
-  }
 
-  componentDidMount() {
-    const localData = localStorage.getItem ('contacts')
-    if (localData) this.setState({ contacts: JSON.parse(localData)})
-    else this.setState({contacts: data})
-  
-  }
-
-  componentDidUpdate(_, prevState) {
-    if(prevState.contacts) {
-      prevState.contacts.length !== this.state.contacts.length && 
-      localStorage.setItem('contacts', JSON.stringify (this.state.contacts))  
-      console.log('update*')
-    }
-  }
+  const filteredContacts = filterContacts();
 
 
-  render() {
-    const contacts = this.filteredContacts();
-
-      return (
-        <div className="container">
-    
-          <div>
-            <h2 className="title">Phonebook</h2>
-            
-            <ContactForm onAddContact={this.onAddContact}/>
-          </div>
-          <div>
-            <h2 className="title">Contacts</h2>
-            <Filter onChange={this.changeFilter} />
-
-            <ContactList contacts={contacts} deleteContact={this.deleteContact} />
-          </div>
-        </div>
-      )
-  }
+   return <div className="container">
+    <div className="in_container">
+      <div>
+        <h2 className="title">Phonebook</h2>
+        <Filter onFilterInput={onFilterInput} filter={filter} />
+        <ContactForm onAddContact={onAddContact}/>
+      </div>
+      <div>
+        <h2 className="title">Contacts</h2>
+          <ContactList contacts={filteredContacts} deleteContact={deleteContact} />
+      </div>
+    </div>
+    <div className="circle"></div>
+   </div>
 }
+
+export default App;

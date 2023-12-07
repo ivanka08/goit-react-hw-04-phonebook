@@ -1,11 +1,11 @@
-import { Component } from "react";
+// import { Component } from "react";
 import css from "../СontactForm/ContactForm.module.css";
 import { nanoid } from "nanoid";
 import PropTypes from 'prop-types';
 
-export class ContactForm extends Component {
+const ContactForm = ({ onAddContact }) => {
 
-    addContact = (evt) => {
+    const addContact = (evt) => {
       evt.preventDefault();
       const form = evt.target;
       const { name, number } = form.elements;
@@ -15,15 +15,14 @@ export class ContactForm extends Component {
         id: nanoid(),
       }
   
-      this.props.onAddContact(contact);
+      onAddContact(contact);
       name.value = "";
       number.value = "";
     }
   
-    render() {
       return <div className={css.container}>
         <form
-          onSubmit={this.addContact}> 
+          onSubmit={addContact}> 
           <label className={css.label}>
             Name
             <input className={css.input}
@@ -48,7 +47,8 @@ export class ContactForm extends Component {
         </form>
         </div>
     }
-  }
+
+  export default ContactForm;
   
   ContactForm.propTypes = {
     onAddContact: PropTypes.func.isRequired,
