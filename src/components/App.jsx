@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import '../../src/index.css';
 import { ContactList } from "./ContactList/ContactList";
 import  ContactForm  from "./СontactForm/ContactForm";
-import { Filter } from "./Filter/Filter";
+import  Filter  from "./Filter/Filter";
 
 
 const App = () => {

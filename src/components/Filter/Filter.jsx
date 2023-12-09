@@ -1,21 +1,31 @@
+import PropTypes from 'prop-types';
 import css from "../Filter/Filter.module.css";
 
+const Filter = ({onFilterInput, filter}) => {
 
+const onInput = (evt) => {
+    const filterValue = evt.currentTarget.value.trim();
+    onFilterInput(filterValue);
+  };
 
-export const Filter =({onChange }) => {  
-
-
-    return (<div className={css.container}>
+    return <div className={css.container}>
       <form name="search">
         <label>
           Find contacts by name
           <input 
             className={css.input}
             type="text"
-            onChange={evt => onChange(evt.currentTarget.value)}
+            onChange={onInput}
           >
           </input>
         </label>
       </form>
-    </div>);
-  }
+    </div>;
+}
+  
+export default Filter;
+
+Filter.propTypes = {
+  onFilterInput: PropTypes.func.isRequired,
+  filter: PropTypes.string.isRequired,
+}
